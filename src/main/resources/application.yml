@@ -1,0 +1,27 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: backend-service
+  profiles:
+    active: @spring.profiles.active@
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+logging:
+  level:
+    root: INFO
+    web: INFO
+openapi:
+  service:
+    title: ${API_TITLE:DUMMY-API-TITLE}
+    version: v1.2.3
+    description: Mota API service
+    server: http://localhost:8081
+    serverName: server test
+    api-docs: This api-docs for client

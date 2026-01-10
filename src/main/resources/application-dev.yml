@@ -1,0 +1,20 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    add-properties: true
+  datasource:
+    url: jdbc:postgresql://${DATABASE_URL:localhost:5432/db_java}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:admin}
+    hikari: # Connection poll
+      max-lifetime: 300000      # 5 phút
+      idle-timeout: 60000       # 1 phút
+      validation-timeout: 5000  # 5 giây
+      minimum-idle: 5
+      maximum-pool-size: 20
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
