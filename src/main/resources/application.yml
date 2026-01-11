@@ -22,6 +22,6 @@ openapi:
     title: ${API_TITLE:DUMMY-API-TITLE}
     version: v1.2.3
     description: Mota API service
-    server: http://localhost:8081
+    server: http://localhost:8084
     serverName: server test
     api-docs: This api-docs for client
