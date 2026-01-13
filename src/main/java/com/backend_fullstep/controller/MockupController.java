@@ -4,12 +4,9 @@ import com.backend_fullstep.controller.request.UserCreationRequest;
 import com.backend_fullstep.controller.request.UserPasswordRequest;
 import com.backend_fullstep.controller.request.UserUpdateRequest;
 import com.backend_fullstep.controller.response.UserResponse;
-import com.backend_fullstep.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -18,12 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/mockup/user")
 @Tag(name ="User Controller")
-@RequiredArgsConstructor
-public class UserController {
-
-    private final UserServiceImpl userService;
+public class MockupController {
 
     @Operation(summary = "Get user list", description = "API retrieve user from database")
     @GetMapping("/list")
@@ -80,12 +74,12 @@ public class UserController {
     };
     @Operation(summary = "Create User", description = "API add new user to db")
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> createUser (@RequestBody UserCreationRequest request){
+    public Map<String, Object> createUser (@RequestBody  UserCreationRequest request){
         Map<String, Object>  result = new LinkedHashMap<>();
         result.put("status", HttpStatus.CREATED.value());
         result.put("message", "User created successfully");
-        result.put("data", userService.save(request));
-        return new ResponseEntity<>(result,HttpStatus.CREATED);
+        result.put("data", 1);
+        return result;
     }
 
     @Operation(summary = "Update User", description = "API update user to db")

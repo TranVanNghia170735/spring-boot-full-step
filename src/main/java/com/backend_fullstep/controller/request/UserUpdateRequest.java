@@ -2,10 +2,11 @@ package com.backend_fullstep.controller.request;
 
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
-public class UserUpdateRequest {
+public class UserUpdateRequest implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;
