@@ -90,21 +90,21 @@ public class UserController {
 
     @Operation(summary = "Update User", description = "API update user to db")
     @PutMapping("/update")
-    public Map<String, Object> updateUser ( UserUpdateRequest request){
+    public ResponseEntity<Map<String, Object>> updateUser (@RequestBody UserUpdateRequest request){
         Map<String, Object>  result = new LinkedHashMap<>();
         result.put("status", HttpStatus.ACCEPTED.value());
         result.put("message", "User updated successfully");
-        result.put("data", "");
-        return result;
+        userService.update(request);
+        return new ResponseEntity<>(result,HttpStatus.ACCEPTED);
     }
 
     @Operation(summary = "Change Password User", description = "API change password user to db")
     @PatchMapping("/change-pwd")
-    public Map<String, Object> changePassword (UserPasswordRequest request){
+    public Map<String, Object> changePassword (@RequestBody UserPasswordRequest request){
         Map<String, Object>  result = new LinkedHashMap<>();
         result.put("status", HttpStatus.NO_CONTENT.value());
         result.put("message", "User change password successfully");
-        result.put("data", "");
+        userService.changePassword(request);
         return result;
     }
 
@@ -114,7 +114,7 @@ public class UserController {
         Map<String, Object>  result = new LinkedHashMap<>();
         result.put("status", HttpStatus.RESET_CONTENT.value());
         result.put("message", "User deleted successfully");
-        result.put("data", "");
+        userService.delete(userId);
         return result;
     }
 }
