@@ -6,10 +6,13 @@ import com.backend_fullstep.controller.request.UserUpdateRequest;
 import com.backend_fullstep.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
@@ -20,6 +23,7 @@ import java.util.Map;
 @Tag(name ="User Controller")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class UserController {
 
     private final UserServiceImpl userService;
@@ -33,6 +37,7 @@ public class UserController {
                                         ){
 
         log.info("Get user list by keyword={}, sort={}, page={}, size={}", keyword, sort, page, size);
+
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.OK.value());
         result.put("message", "user list");
@@ -42,7 +47,7 @@ public class UserController {
 
     @Operation(summary = "Get user detail", description = "API retrieve user detail by ID")
     @GetMapping("/{userId}")
-    public Map<String, Object> getUserDetail (@PathVariable Long userId){
+    public Map<String, Object> getUserDetail (@PathVariable @Min(value = 1, message = "userId must be equals or greater than 1") Long userId){
 
         log.info("Get user detail by ID: {}", userId);
 
@@ -55,7 +60,7 @@ public class UserController {
 
     @Operation(summary = "Create User", description = "API add new user to db")
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> createUser (@RequestBody UserCreationRequest request){
+    public ResponseEntity<Map<String, Object>> createUser (@RequestBody @Valid UserCreationRequest request){
         log.info("Creating new user: {}", request);
 
         Map<String, Object>  result = new LinkedHashMap<>();
@@ -67,7 +72,7 @@ public class UserController {
 
     @Operation(summary = "Update User", description = "API update user to db")
     @PutMapping("/update")
-    public ResponseEntity<Map<String, Object>> updateUser (@RequestBody UserUpdateRequest request){
+    public ResponseEntity<Map<String, Object>> updateUser (@RequestBody @Valid UserUpdateRequest request){
         log.info("Updating user: {}", request);
 
         Map<String, Object>  result = new LinkedHashMap<>();
@@ -79,7 +84,7 @@ public class UserController {
 
     @Operation(summary = "Change Password User", description = "API change password user to db")
     @PatchMapping("/change-pwd")
-    public Map<String, Object> changePassword (@RequestBody UserPasswordRequest request){
+    public Map<String, Object> changePassword (@RequestBody @Valid UserPasswordRequest request){
         log.info("ChangePassword requested {}", request);
 
         Map<String, Object>  result = new LinkedHashMap<>();
@@ -91,7 +96,7 @@ public class UserController {
 
     @Operation(summary = "Inactive user", description = "API activate user to database")
     @DeleteMapping("/delete/{userId}")
-    public Map<String, Object> deleteUser (@PathVariable Long userId){
+    public Map<String, Object> deleteUser (@PathVariable @Min(value = 1, message = "userId must be equals or greater than 1") Long userId){
 
         log.info("Delete user by userId = {}", userId);
 

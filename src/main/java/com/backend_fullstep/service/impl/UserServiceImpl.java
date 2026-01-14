@@ -6,6 +6,8 @@ import com.backend_fullstep.controller.request.UserPasswordRequest;
 import com.backend_fullstep.controller.request.UserUpdateRequest;
 import com.backend_fullstep.controller.response.UserPageResponse;
 import com.backend_fullstep.controller.response.UserResponse;
+import com.backend_fullstep.exception.BadRequestException;
+import com.backend_fullstep.exception.InvalidDataException;
 import com.backend_fullstep.exception.ResourceNotFoundException;
 import com.backend_fullstep.model.AddressEntity;
 import com.backend_fullstep.model.UserEntity;
@@ -25,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,7 +131,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor =  Exception.class)
     public long save(UserCreationRequest req) {
+
         log.info("Saving user: {}", req);
+        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
+        if(userByEmail!=null){
+            throw new InvalidDataException("Email already exists");
+        }
+
         UserEntity user = new UserEntity();
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
@@ -215,9 +224,10 @@ public class UserServiceImpl implements UserService {
     public void changePassword(UserPasswordRequest req) {
         log.info("Changing password for user: {}", req);
         UserEntity userEntity = getUserEntity(req.getId());
-        if(req.getPassword().equals(req.getConfirmPassword())){
-            userEntity.setPassword(passwordEncoder.encode(req.getPassword()));
+        if (!Objects.equals(req.getPassword(), req.getConfirmPassword())) {
+            throw new BadRequestException("Password and confirm password do not match");
         }
+        userEntity.setPassword(passwordEncoder.encode(req.getPassword()));
         userRepository.save(userEntity);
         log.info("Changed password for user: {}", userEntity);
     }
