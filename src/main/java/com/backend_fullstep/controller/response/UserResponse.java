@@ -1,21 +1,23 @@
 package com.backend_fullstep.controller.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.backend_fullstep.common.Gender;
+import lombok.*;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserResponse implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;
-    private String gender;
-    private Date birthday;
-    private String username;
+    private Gender gender;
+    private LocalDate birthday;
+    private String userName;
     private String email;
     private String phone;
     // more

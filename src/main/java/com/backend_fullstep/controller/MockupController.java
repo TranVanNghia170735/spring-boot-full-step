@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +28,9 @@ public class MockupController {
         userResponse1.setId(1l);
         userResponse1.setFirstName("Nghia");
         userResponse1.setLastName("Tran");
-        userResponse1.setGender("Nam");
-        userResponse1.setBirthday(new Date("07/17/1998"));
-        userResponse1.setUsername("admin");
+        userResponse1.setGender(null);
+        userResponse1.setBirthday(LocalDate.parse("1998-07-17"));
+        userResponse1.setUserName("admin");
         userResponse1.setEmail("admin@gmail.com");
         userResponse1.setPhone("0123456789");
 
@@ -39,9 +39,9 @@ public class MockupController {
         userResponse2.setId(2l);
         userResponse2.setFirstName("NghiaTV2");
         userResponse2.setLastName("Tran2");
-        userResponse2.setGender("Nam");
-        userResponse2.setBirthday(new Date("07/18/1998"));
-        userResponse2.setUsername("user");
+        userResponse2.setGender(null);
+        userResponse2.setBirthday(LocalDate.parse("1998-07-18"));
+        userResponse2.setUserName("user");
         userResponse2.setEmail("user@gmail.com");
         userResponse2.setPhone("0987654321");
         List<UserResponse> userResponses = List.of(userResponse1, userResponse2);
@@ -60,9 +60,9 @@ public class MockupController {
         userResponse1.setId(1l);
         userResponse1.setFirstName("Nghia");
         userResponse1.setLastName("Tran");
-        userResponse1.setGender("Nam");
-        userResponse1.setBirthday(new Date("07/17/1998"));
-        userResponse1.setUsername("admin");
+        userResponse1.setGender(null);
+        userResponse1.setBirthday(LocalDate.parse("1998-07-18"));
+        userResponse1.setUserName("admin");
         userResponse1.setEmail("admin@gmail.com");
         userResponse1.setPhone("0123456789");
 

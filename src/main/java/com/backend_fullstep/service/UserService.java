@@ -3,12 +3,11 @@ package com.backend_fullstep.service;
 import com.backend_fullstep.controller.request.UserCreationRequest;
 import com.backend_fullstep.controller.request.UserPasswordRequest;
 import com.backend_fullstep.controller.request.UserUpdateRequest;
+import com.backend_fullstep.controller.response.UserPageResponse;
 import com.backend_fullstep.controller.response.UserResponse;
 
-import java.util.List;
-
 public interface UserService {
-    List<UserResponse> findAll();
+    UserPageResponse findAll(String keyword, String sort, int page, int size);
     UserResponse findById(Long id);
     UserResponse findByUserName (String name);
     UserResponse findByEmail(String email);

@@ -7,13 +7,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -45,7 +43,7 @@ public class UserEntity {
     private String phone;
 
     @Column(name="username", unique = true,nullable = false, length = 255)
-    private String username;
+    private String userName;
 
     @Column(name="password", length = 255)
     private String password;
