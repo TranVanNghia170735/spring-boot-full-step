@@ -7,6 +7,10 @@ spring:
   profiles:
     active: @spring.profiles.active@
 
+  sendgrid:
+    apiKey: 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
+    from-mail: demodev.info@gmail.com
+
 management:
   endpoints:
     web:
