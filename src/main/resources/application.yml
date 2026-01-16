@@ -8,7 +8,7 @@ spring:
     active: @spring.profiles.active@
 
   sendgrid:
-    apiKey: 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
+    apiKey: ${API_KEY_SENDGRID}
     from-mail: demodev.info@gmail.com
     templateId: d-fc23f47544e145768d1c8a12327fa4c6
     verificationLink: http://localhost:8080/user/confirm-email
