@@ -3,6 +3,7 @@ package com.backend_fullstep.controller;
 import com.backend_fullstep.controller.request.UserCreationRequest;
 import com.backend_fullstep.controller.request.UserPasswordRequest;
 import com.backend_fullstep.controller.request.UserUpdateRequest;
+import com.backend_fullstep.service.impl.EmailService;
 import com.backend_fullstep.service.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserServiceImpl userService;
+    private final EmailService emailService;
 
     @Operation(summary = "Get user list", description = "API retrieve user from database")
     @GetMapping("/list")
@@ -106,4 +108,6 @@ public class UserController {
         userService.delete(userId);
         return result;
     }
+
+
 }

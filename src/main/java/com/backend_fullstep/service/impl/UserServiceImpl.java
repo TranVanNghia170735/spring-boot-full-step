@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public UserPageResponse findAll(String keyword, String sort, int page, int size) {
@@ -133,10 +135,10 @@ public class UserServiceImpl implements UserService {
     public long save(UserCreationRequest req) {
 
         log.info("Saving user: {}", req);
-        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
-        if(userByEmail!=null){
-            throw new InvalidDataException("Email already exists");
-        }
+//        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
+//        if(userByEmail!=null){
+//            throw new InvalidDataException("Email already exists");
+//        }
 
         UserEntity user = new UserEntity();
         user.setFirstName(req.getFirstName());
@@ -170,6 +172,12 @@ public class UserServiceImpl implements UserService {
             });
             addressRepository.saveAll(addresses);
             log.info("Saved addresses: {}", addresses);
+        }
+        //Send email verification
+        try {
+            emailService.sendVerificationEmail(req.getEmail(), req.getUsername());
+        } catch (IOException e) {
+            throw new InvalidDataException("Send email failed");
         }
         return result.getId();
     }
