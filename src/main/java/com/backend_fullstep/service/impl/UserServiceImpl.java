@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(entity.getLastName())
                 .gender(entity.getGender())
                 .birthday(entity.getBirthday())
-                .userName(entity.getUserName())
+                .userName(entity.getUsername())
                 .phone(entity.getPhone())
                 .email(entity.getEmail())
                 .build())
@@ -135,10 +135,10 @@ public class UserServiceImpl implements UserService {
     public long save(UserCreationRequest req) {
 
         log.info("Saving user: {}", req);
-//        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
-//        if(userByEmail!=null){
-//            throw new InvalidDataException("Email already exists");
-//        }
+        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
+        if(userByEmail!=null){
+            throw new InvalidDataException("Email already exists");
+        }
 
         UserEntity user = new UserEntity();
         user.setFirstName(req.getFirstName());
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
                 addressEntity.setCity(addressRequest.getCity());
                 addressEntity.setCountry(addressRequest.getCountry());
                 addressEntity.setAddressType(addressRequest.getAddressType());
-                addressEntity.setUserId(result.getId());
+                addressEntity.setUser(result);
                 addresses.add(addressEntity);
             });
             addressRepository.saveAll(addresses);
@@ -215,7 +215,7 @@ public class UserServiceImpl implements UserService {
             addressEntity.setCity(addressRequest.getCity());
             addressEntity.setCountry(addressRequest.getCountry());
             addressEntity.setAddressType(addressRequest.getAddressType());
-            addressEntity.setUserId(userEntity.getId());
+            addressEntity.setUser(userEntity);
 
             addresses.add(addressEntity);
         });

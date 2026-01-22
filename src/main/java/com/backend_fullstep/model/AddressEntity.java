@@ -1,22 +1,16 @@
 package com.backend_fullstep.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
 @Entity(name="tbl_address")
-public class AddressEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
-    private Long id;
+public class AddressEntity extends  AbstractEntity<Long>{
 
     @Column(name="apartment_number")
     private String apartmentNumber;
@@ -42,14 +36,8 @@ public class AddressEntity {
     @Column(name="address_type")
     private Integer addressType;
 
-    @Column(name="user_id")
-    private Long userId;
+    @JoinColumn(name = "user_id")
+    @ManyToOne
+    private UserEntity user;
 
-    @Column(name="created_at", length = 255)
-    @CreationTimestamp
-    private LocalDate createdAt;
-
-    @Column(name="updated_at", length = 255)
-    @UpdateTimestamp
-    private LocalDate updatedAt;
 }

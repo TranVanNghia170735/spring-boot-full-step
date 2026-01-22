@@ -6,21 +6,23 @@ import com.backend_fullstep.common.UserType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @Table(name="tbl_user")
-public class UserEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class UserEntity extends  AbstractEntity<Long> implements UserDetails , Serializable {
 
     @Column(name="first_name", length = 255)
     private String firstName;
@@ -58,11 +60,42 @@ public class UserEntity {
     @Column(name="status", length = 255)
     private UserStatus status;
 
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDate createdAt;
+    @OneToMany(mappedBy = "user")
+    private Set<UserHasGroup> groups = new HashSet<>();
 
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDate updatedAt;
+    @OneToMany(mappedBy = "user")
+    private Set<UserHasRole> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<AddressEntity> addresses = new HashSet<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
 }
