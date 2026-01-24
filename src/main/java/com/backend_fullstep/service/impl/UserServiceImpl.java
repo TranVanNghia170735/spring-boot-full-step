@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -135,8 +136,8 @@ public class UserServiceImpl implements UserService {
     public long save(UserCreationRequest req) {
 
         log.info("Saving user: {}", req);
-        UserEntity userByEmail = userRepository.findByEmail(req.getEmail());
-        if(userByEmail!=null){
+        Optional<UserEntity> userByEmail = userRepository.findByEmail(req.getEmail());
+        if(userByEmail.isPresent()){
             throw new InvalidDataException("Email already exists");
         }
 
@@ -150,6 +151,7 @@ public class UserServiceImpl implements UserService {
         user.setUserName(req.getUsername());
         user.setType(req.getType());
         user.setStatus(UserStatus.NONE);
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
 
         UserEntity result = userRepository.save(user);
         log.info("Saved user: {}", user);
@@ -249,6 +251,7 @@ public class UserServiceImpl implements UserService {
         log.info("Deleted user id: {}", id);
     }
 
+
     /**
      * Get user by id
      * @param id
@@ -257,4 +260,5 @@ public class UserServiceImpl implements UserService {
     private UserEntity getUserEntity (Long id){
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
+
 }

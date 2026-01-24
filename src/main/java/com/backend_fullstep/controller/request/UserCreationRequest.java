@@ -4,6 +4,7 @@ import com.backend_fullstep.common.Gender;
 import com.backend_fullstep.common.UserType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -26,5 +27,9 @@ public class UserCreationRequest implements Serializable {
     private String email;
     private String phone;
     private UserType type;
+
+    @NotNull(message = "password must be not null")
+    private String password;
+
     private List<AddressRequest> addresses; //home, office
 }
