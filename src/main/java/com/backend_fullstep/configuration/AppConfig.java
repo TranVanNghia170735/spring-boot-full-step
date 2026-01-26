@@ -19,8 +19,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -34,12 +39,13 @@ public class AppConfig {
 
 
 
-//    @Value("${spring.sendgrid.apiKey}")
-//    private String sendGridApiKey;
+    @Value("${spring.sendgrid.apiKey}")
+    private String sendGridApiKey;
 
     private final String[] whitelistedUrls ={"/auth/**"};
     private final UserServiceDetail userServiceDetail;
     private final PreFilter preFilter;
+
 
     /*Định nghĩa LUẬT BẢO MẬT cho HTTP request*/
     @Bean
@@ -51,22 +57,21 @@ public class AppConfig {
                         .authenticationProvider(authenticationProvider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/actuator/**",
-//                                "/v3/**",
-//                                "/swagger-ui/**"
-//                        ).permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin(form -> form
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout.permitAll());
-//
-//        return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:8500"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(false);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     /*BỎ QUA Spring Security hoàn toàn cho một số URL*/
@@ -87,6 +92,7 @@ public class AppConfig {
         return new SendGrid(apiKey);
     }
 
+
     @Bean
     public WebMvcConfigurer corsConfigurer(){
         return new WebMvcConfigurer() {
@@ -100,6 +106,7 @@ public class AppConfig {
                         .maxAge(3600);
             }
         };
+
     }
 
     @Bean

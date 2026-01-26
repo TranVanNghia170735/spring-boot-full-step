@@ -18,3 +18,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+
+jwt:
+  expiryMinutes: 60
+  expiryDay: 14
+  accessKey: CFvQ9zB9oShvQjLxx56uIg6YoJW/7mTH7S8BKXfVkuU=
+  refreshKey: LyEYa3mbtUqK3hKcjzZv1uNmJi55PYoQkiGvrIYayxU=
+  #generate string to hs256 online

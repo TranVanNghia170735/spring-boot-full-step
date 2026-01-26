@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceDetail {
+public class UserServiceDetail  {
     private final UserRepository userRepository;
 
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
 }
