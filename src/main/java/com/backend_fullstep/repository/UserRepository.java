@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,6 +24,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "or lower(u.email) like :keyword)"
     )
     Page<UserEntity> searchByKeyword(String keyword, Pageable pageable);
+
+    @Query("select r.name from Role r inner join UserHasRole ur on r.id = ur.user.id where ur.id=:userId")
+    List<String> findAllRolesByUserId(Long userId);
 
 
 }

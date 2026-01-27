@@ -6,6 +6,6 @@ import com.backend_fullstep.controller.response.TokenResponse;
 
 
 public interface AuthenticationService {
-    TokenResponse getAccessToken(SignInRequest request);
-    TokenResponse getRefreshToken(RefreshTokenRequest request);
+    TokenResponse accessToken(SignInRequest request);
+    TokenResponse refreshToken(RefreshTokenRequest request);
 }

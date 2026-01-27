@@ -20,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +126,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse findByUserName(String name) {
         return null;
+    }
+
+    //Cách 1
+    @Override
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByUserName(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
+    }
+
+    //Cách 1.1
+
+//    @Override
+//    public UserDetailsService userDetailsService() {
+//        return new UserDetailsService() {
+//            @Override
+//            public UserDetails loadUserByUsername(String username) {
+//                return userRepository.findByUserName(username)
+//                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//            }
+//        };
+//    }
+
+
+    @Override
+    public UserEntity getByUsername(String userName) {
+        return userRepository.findByUserName(userName).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public List<String> getAllRolesByUserId(long userId) {
+        return userRepository.findAllRolesByUserId(userId);
     }
 
     @Override

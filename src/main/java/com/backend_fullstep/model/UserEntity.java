@@ -4,8 +4,7 @@ import com.backend_fullstep.common.Gender;
 import com.backend_fullstep.common.UserStatus;
 import com.backend_fullstep.common.UserType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +20,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="tbl_user")
 public class UserEntity extends  AbstractEntity<Long> implements UserDetails , Serializable {
 
@@ -76,8 +78,9 @@ public class UserEntity extends  AbstractEntity<Long> implements UserDetails , S
 
     @Override
     public String getUsername() {
-        return "";
+        return this.userName;
     }
+
 
     @Override
     public boolean isAccountNonExpired() {

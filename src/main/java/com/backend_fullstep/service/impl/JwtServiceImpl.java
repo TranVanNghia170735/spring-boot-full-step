@@ -24,8 +24,8 @@ import java.util.function.Function;
 @Slf4j(topic="JWT-SERVICE")
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${jwt.expiryMinutes}")
-    private long expiryMinutes;
+    @Value("${jwt.expiryHour}")
+    private long expiryHour;
 
     @Value("${jwt.expiryDay}")
     private long expiryDay;
@@ -36,50 +36,58 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.refreshKey}")
     private String refreshKey;
 
+    @Value("${jwt.resetKey}")
+    private String resetKey;
 
 
     @Override
-    public String generateAccessToken(String username, List<String> authorities) {
-        log.info("Generate access token for username {} with authorities {}", username, authorities);
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", authorities);
-        return generateToken(claims, username);
-    }
-
-    private String generateToken(Map<String, Object> claims, String username){
-        log.info("--------------------[ generateToken ]-----------------------");
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * expiryMinutes))
-                .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS256)
-                .compact();
+    public String generateToken(UserDetails user) {
+        return generateToken(new HashMap<>(), user);
     }
 
     @Override
-    public String generateRefreshToken(String username, List<String> authorities) {
-        log.info("Generate refresh token");
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", authorities);
-        return generateForRefreshToken(claims, username);
+    public String generateRefreshToken(UserDetails user) {
+        return generateRefreshToken(new HashMap<>(), user);
     }
 
-    private String generateForRefreshToken(Map<String, Object> claims, String username) {
-        log.info(" Generate for refresh token");
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * expiryDay))
-                .signWith(getKey(TokenType.REFRESH_TOKEN), SignatureAlgorithm.HS256).compact();
+    @Override
+    public String generateResetToken(UserDetails user) {
+        return "";
     }
 
     @Override
     public String extractUsername(String token, TokenType type) {
         return extractClaim(token, type, Claims::getSubject);
     }
+
+
+
+    private String generateToken(Map<String, Object> claims, UserDetails userDetails){
+        log.info("--------------------[ generateToken ]-----------------------");
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 *60 * expiryHour))
+                .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+
+
+    private String generateRefreshToken(Map<String, Object> claims, UserDetails userDetails) {
+        log.info("--------------------[ generateRefreshToken ]-----------------------");
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * expiryDay))
+                .signWith(getKey(TokenType.REFRESH_TOKEN), SignatureAlgorithm.HS256).compact();
+    }
+
+
+
+
 
     @Override
     public boolean isValid(String token, TokenType type, UserDetails userDetails) {

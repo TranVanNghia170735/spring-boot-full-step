@@ -20,8 +20,11 @@ spring:
       ddl-auto: none
 
 jwt:
-  expiryMinutes: 60
+  expiryHour: 1
   expiryDay: 14
   accessKey: CFvQ9zB9oShvQjLxx56uIg6YoJW/7mTH7S8BKXfVkuU=
   refreshKey: LyEYa3mbtUqK3hKcjzZv1uNmJi55PYoQkiGvrIYayxU=
+  resetKey: ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
   #generate string to hs256 online
+  #https://www.devglan.com/online-tools/text-encryption-decryption
+
