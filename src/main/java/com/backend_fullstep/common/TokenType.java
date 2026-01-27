@@ -1,5 +1,5 @@
 package com.backend_fullstep.common;
 
 public enum TokenType {
-    ACCESS_TOKEN,REFRESH_TOKEN
+    ACCESS_TOKEN,REFRESH_TOKEN, RESET_TOKEN
 }

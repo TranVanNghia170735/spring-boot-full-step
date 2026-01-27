@@ -1,5 +1,6 @@
 package com.backend_fullstep.service.impl;
 
+import com.backend_fullstep.exception.ResourceNotFoundException;
 import com.backend_fullstep.model.Token;
 import com.backend_fullstep.repository.TokenRepository;
 import com.backend_fullstep.service.TokenService;
@@ -16,7 +17,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Token getByUsername(String username) {
-        return null;
+        return tokenRepository.findByUserName(username).orElseThrow(() -> new ResourceNotFoundException("Not found token"));
     }
 
     @Override
@@ -36,6 +37,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void delete(String username) {
-
+        Token token = getByUsername(username);
+        tokenRepository.delete(token);
     }
 }

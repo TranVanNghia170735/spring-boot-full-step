@@ -1,11 +1,11 @@
 package com.backend_fullstep.controller;
 
 
-import com.backend_fullstep.controller.request.RefreshTokenRequest;
 import com.backend_fullstep.controller.request.SignInRequest;
 import com.backend_fullstep.controller.response.TokenResponse;
 import com.backend_fullstep.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,8 +33,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public TokenResponse refreshToken (@RequestBody RefreshTokenRequest refreshToken){
+    public ResponseEntity<TokenResponse> refreshToken (HttpServletRequest request){
         log.info("Refresh token request");
-        return authenticationService.refreshToken(refreshToken);
+        return new ResponseEntity<>(authenticationService.refreshToken(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/remove-token")
+    public ResponseEntity<String> removeToken (HttpServletRequest request){
+        log.info("Remove token request");
+        return new ResponseEntity<>(authenticationService.removeToken(request), HttpStatus.OK);
     }
 }
