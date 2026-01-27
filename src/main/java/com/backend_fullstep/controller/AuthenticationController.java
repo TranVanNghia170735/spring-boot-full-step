@@ -1,6 +1,7 @@
 package com.backend_fullstep.controller;
 
 
+import com.backend_fullstep.controller.request.ForgotPasswordRequest;
 import com.backend_fullstep.controller.request.SignInRequest;
 import com.backend_fullstep.controller.response.TokenResponse;
 import com.backend_fullstep.service.AuthenticationService;
@@ -43,4 +44,12 @@ public class AuthenticationController {
         log.info("Remove token request");
         return new ResponseEntity<>(authenticationService.removeToken(request), HttpStatus.OK);
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword (@RequestBody ForgotPasswordRequest email){
+        log.info("Forgot password request");
+        return new ResponseEntity<>(authenticationService.forgotPassword(email), HttpStatus.OK);
+    }
+
+
 }

@@ -52,7 +52,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateResetToken(UserDetails user) {
-        return "";
+        return generateResetToken(new HashMap<>(), user);
     }
 
     @Override
@@ -85,6 +85,17 @@ public class JwtServiceImpl implements JwtService {
                 .signWith(getKey(TokenType.REFRESH_TOKEN), SignatureAlgorithm.HS256).compact();
     }
 
+    private String generateResetToken(Map<String, Object> claims, UserDetails userDetails) {
+        log.info("--------------------[ generateResetToken ]-----------------------");
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(getKey(TokenType.RESET_TOKEN), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
 
 
 
@@ -102,6 +113,7 @@ public class JwtServiceImpl implements JwtService {
             case ACCESS_TOKEN -> {return Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessKey));
             }
             case REFRESH_TOKEN -> {return Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshKey));}
+            case RESET_TOKEN -> {return Keys.hmacShaKeyFor(Decoders.BASE64.decode(resetKey));}
             default -> throw  new InvalidDataException("Invalid token type");
         }
     }

@@ -2,10 +2,13 @@ package com.backend_fullstep.service.impl;
 
 
 import com.backend_fullstep.common.TokenType;
+import com.backend_fullstep.controller.request.ForgotPasswordRequest;
+import com.backend_fullstep.controller.request.ResetPasswordDTO;
 import com.backend_fullstep.controller.request.SignInRequest;
 import com.backend_fullstep.controller.response.TokenResponse;
 import com.backend_fullstep.exception.InvalidDataException;
 import com.backend_fullstep.model.Token;
+import com.backend_fullstep.model.UserEntity;
 import com.backend_fullstep.repository.UserRepository;
 import com.backend_fullstep.service.AuthenticationService;
 import com.backend_fullstep.service.JwtService;
@@ -122,5 +125,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenService.delete(userName);
 
         return "Removed";
+    }
+
+    @Override
+    public String forgotPassword(ForgotPasswordRequest email) {
+        log.info("----------- Forgot Password-------------");
+
+        //Check email exists or not
+        UserEntity userEntity = userService.getUserByEmail(email.getEmail());
+
+        // Generate reset token.
+        String resetToken = jwtService.generateResetToken(userEntity);
+
+        // Save to db
+        tokenService.save(Token.builder()
+                        .userName(userEntity.getUsername())
+                        .resetToken(resetToken)
+                        .build());
+
+
+        // TODO send email to user
+        String confirmLink = String.format("curl --location 'http://localhost:80/auth/reset-password' \\\n" +
+                "--header 'accept: */*' \\\n" +
+                "--header 'Content-Type: application/json' \\\n" +
+                "--data '%s'", resetToken);
+        return resetToken;
+    }
+
+    @Override
+    public String resetPassword(String secretKey) {
+        return "";
+    }
+
+    @Override
+    public String changePassword(ResetPasswordDTO request) {
+        return "";
     }
 }
