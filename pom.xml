@@ -129,6 +129,21 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!--API + abstraction của Spring-->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!--client kết nối Redis-->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>5.1.2</version>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Test controller has role or permission -->
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.security</groupId>-->
