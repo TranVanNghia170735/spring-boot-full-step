@@ -4,6 +4,7 @@ package com.backend_fullstep.service.impl;
 import com.backend_fullstep.common.TokenType;
 import com.backend_fullstep.controller.request.ForgotPasswordRequest;
 import com.backend_fullstep.controller.request.ResetPasswordDTO;
+import com.backend_fullstep.controller.request.SecretKeyRequest;
 import com.backend_fullstep.controller.request.SignInRequest;
 import com.backend_fullstep.controller.response.TokenResponse;
 import com.backend_fullstep.exception.InvalidDataException;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +38,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final UserService userService;
     private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public TokenResponse accessToken(SignInRequest signInRequest) {
@@ -153,12 +156,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String resetPassword(String secretKey) {
-        return "";
+    public String resetPassword(SecretKeyRequest secretKey) {
+        log.info("----------- Reset Password-------------");
+
+        // validate token
+        var user = validateToken(secretKey.getSecretKey());
+
+        // check token by username
+        tokenService.getByUsername(user.getUsername());
+
+        return "Reset";
     }
 
     @Override
     public String changePassword(ResetPasswordDTO request) {
-        return "";
+        log.info("----------- Change Password-------------");
+        if(!request.getPassword().equals(request.getConfirmPassword())){
+            throw new InvalidDataException("Password do not match");
+        }
+
+        //get user by reset token
+        var user = validateToken(request.getSecretKey());
+
+        //update password
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userService.saveUser(user);
+        return "Changed";
+    }
+
+    private UserEntity validateToken(String token){
+
+        // validate token
+        var userName = jwtService.extractUsername(token, TokenType.RESET_TOKEN);
+
+        // validate user is active or not
+        var user = userService.getByUsername(userName);
+        if(!user.isEnabled()){
+            throw new InvalidDataException("User not active");
+        }
+        return user;
     }
 }

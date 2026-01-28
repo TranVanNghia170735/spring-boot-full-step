@@ -164,6 +164,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long saveUser(UserEntity user) {
+        userRepository.save(user);
+        return user.getId();
+    }
+
+    @Override
     public UserResponse findByEmail(String email) {
         return null;
     }

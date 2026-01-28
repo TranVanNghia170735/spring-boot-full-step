@@ -2,6 +2,8 @@ package com.backend_fullstep.controller;
 
 
 import com.backend_fullstep.controller.request.ForgotPasswordRequest;
+import com.backend_fullstep.controller.request.ResetPasswordDTO;
+import com.backend_fullstep.controller.request.SecretKeyRequest;
 import com.backend_fullstep.controller.request.SignInRequest;
 import com.backend_fullstep.controller.response.TokenResponse;
 import com.backend_fullstep.service.AuthenticationService;
@@ -50,6 +52,20 @@ public class AuthenticationController {
         log.info("Forgot password request");
         return new ResponseEntity<>(authenticationService.forgotPassword(email), HttpStatus.OK);
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword (@RequestBody SecretKeyRequest secretKeyRequest){
+        log.info("Reset password request");
+        return new ResponseEntity<>(authenticationService.resetPassword(secretKeyRequest), HttpStatus.OK);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword (@RequestBody ResetPasswordDTO resetPasswordDTO){
+        log.info("Change password request");
+        return new ResponseEntity<>(authenticationService.changePassword(resetPasswordDTO), HttpStatus.OK);
+    }
+
+
 
 
 }

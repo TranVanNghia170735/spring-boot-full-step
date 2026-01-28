@@ -24,4 +24,6 @@ public interface UserService {
     UserEntity getByUsername(String userName);
     List<String> getAllRolesByUserId(long userId);
     UserEntity getUserByEmail(String email);
+
+    long saveUser(UserEntity user);
 }
