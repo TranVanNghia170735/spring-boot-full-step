@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
             String message
     ) {
         return ErrorResponse.builder()
-                .timestamp(Instant.now())
+                .timestamp(LocalDate.now())
                 .status(status.value())
                 .path(request.getRequestURI())
                 .error(error)
@@ -144,6 +144,5 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-
 
 }

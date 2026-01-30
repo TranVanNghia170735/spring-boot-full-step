@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
@@ -65,7 +66,8 @@ public class UserEntity extends  AbstractEntity<Long> implements UserDetails , S
     @OneToMany(mappedBy = "user")
     private Set<UserHasGroup> groups = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "user")
     private Set<UserHasRole> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
@@ -73,7 +75,15 @@ public class UserEntity extends  AbstractEntity<Long> implements UserDetails , S
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        // 1.Get role
+        List<Role> roleList = roles.stream().map(UserHasRole::getRole).toList();
+
+        //2.Get role name
+        List<String> roleNames = roleList.stream().map(Role::getName).toList();
+
+        //3. Add role name authority
+        return roleNames.stream().map(SimpleGrantedAuthority::new).toList();
+
     }
 
     @Override

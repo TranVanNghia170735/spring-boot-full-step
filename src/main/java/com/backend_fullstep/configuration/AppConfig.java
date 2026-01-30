@@ -1,5 +1,7 @@
 package com.backend_fullstep.configuration;
 
+import com.backend_fullstep.exception.RestAccessDeniedHandler;
+import com.backend_fullstep.exception.RestAuthenticationEntryPoint;
 import com.backend_fullstep.service.UserServiceDetail;
 import com.sendgrid.SendGrid;
 import lombok.NonNull;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,6 +35,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @RequiredArgsConstructor
 @Profile("!prod")
+@EnableMethodSecurity(prePostEnabled = true)
 public class AppConfig {
     // Khởi tạo springweb security -> dành cho swagger.
     // Config spring web configer  -> dành cho api.
@@ -45,6 +49,8 @@ public class AppConfig {
     private final String[] whitelistedUrls ={"/auth/**"};
     private final UserServiceDetail userServiceDetail;
     private final PreFilter preFilter;
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
+    private final RestAccessDeniedHandler accessDeniedHandler;
 
 
     /*Định nghĩa LUẬT BẢO MẬT cho HTTP request*/
@@ -53,6 +59,9 @@ public class AppConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(whitelistedUrls).permitAll()
                         .anyRequest().permitAll())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                         .authenticationProvider(authenticationProvider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -123,4 +132,5 @@ public class AppConfig {
         authProvider.setUserDetailsService(userServiceDetail.userDetailsService());
         return authProvider;
     }
+
 }

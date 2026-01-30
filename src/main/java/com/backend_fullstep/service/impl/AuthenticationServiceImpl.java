@@ -8,7 +8,6 @@ import com.backend_fullstep.controller.request.SecretKeyRequest;
 import com.backend_fullstep.controller.request.SignInRequest;
 import com.backend_fullstep.controller.response.TokenResponse;
 import com.backend_fullstep.exception.InvalidDataException;
-import com.backend_fullstep.model.RedisToken;
 import com.backend_fullstep.model.Token;
 import com.backend_fullstep.model.UserEntity;
 import com.backend_fullstep.repository.UserRepository;
@@ -18,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,9 +52,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         List<String> roles = userService.getAllRolesByUserId(user.getId());
         List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority(role)).toList();
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signInRequest.getUsername(), signInRequest.getPassword(), authorities));
 
+        try {
+            Authentication authentication= authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(signInRequest.getUsername(), signInRequest.getPassword(), authorities));
+
+            log.info("isAuthenticated = {}", authentication.getAuthorities().toString());
+            // SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (AuthenticationException e) {
+            throw new AccessDeniedException(e.getMessage());
+        }
         //Create new access token
         String accessToken = jwtService.generateToken(user);
 
@@ -62,18 +71,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String useName = user.getUsername();
 
         //Save token to db.
-//        tokenService.save(Token.builder()
-//                .userName(user.getUsername())
-//                .accessToken(accessToken)
-//                .refreshToken(refreshToken)
-//                .build());
-
-        // Save token to redis
-        redisTokenService.save(RedisToken.builder()
-                .id(user.getUsername())
+        tokenService.save(Token.builder()
+                .userName(user.getUsername())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build());
+
+        // Save token to redis
+//        redisTokenService.save(RedisToken.builder()
+//                .id(user.getUsername())
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build());
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
@@ -108,11 +117,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .refreshToken(refreshToken).build());
 
         // Save token to redis
-        redisTokenService.save(RedisToken.builder()
-                .id(user.getUsername())
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build());
+//        redisTokenService.save(RedisToken.builder()
+//                .id(user.getUsername())
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build());
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
@@ -138,8 +147,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new InvalidDataException("Not allow access with this token");
         }
 
-        //tokenService.delete(userName);
-        redisTokenService.remove(userName);
+        tokenService.delete(userName);
+//        redisTokenService.remove(userName);
 
 
         return "Removed";
@@ -156,16 +165,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String resetToken = jwtService.generateResetToken(userEntity);
 
         // Save to db
-//        tokenService.save(Token.builder()
-//                        .userName(userEntity.getUsername())
-//                        .resetToken(resetToken)
-//                        .build());
+        tokenService.save(Token.builder()
+                        .userName(userEntity.getUsername())
+                        .resetToken(resetToken)
+                        .build());
 
         // Save to redis
-        redisTokenService.save(RedisToken.builder()
-                .id(userEntity.getUsername())
-                .resetToken(resetToken)
-                .build());
+//        redisTokenService.save(RedisToken.builder()
+//                .id(userEntity.getUsername())
+//                .resetToken(resetToken)
+//                .build());
 
 
         // TODO send email to user
@@ -211,7 +220,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var userName = jwtService.extractUsername(token, TokenType.RESET_TOKEN);
 
         // Check token in redis
-        redisTokenService.isExists(userName);
+//        redisTokenService.isExists(userName);
 
         // validate user is active or not
         var user = userService.getByUsername(userName);

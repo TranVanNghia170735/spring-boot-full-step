@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 
 @Component
@@ -31,49 +33,53 @@ public class PreFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserServiceDetail userServiceDetail;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("PreFilter {} {}", request.getMethod(), request.getRequestURI());
 
         final String authorization = request.getHeader("Authorization");
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            if (StringUtils.isNotEmpty(authorization) && authorization.startsWith("Bearer ")) {
-                String token = authorization.substring(7);
-                String username = "";
-                try {
-                    username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
-                } catch (AccessDeniedException e) {
-                    log.info("Extract username form token", e.getMessage());
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(mapper.writeValueAsString(ErrorResponse.builder().path(request.getRequestURI()).message(e.getMessage()).build()));
-                    return;
-                }
 
 
-                if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (StringUtils.isNotEmpty(authorization) && authorization.startsWith("Bearer ")) {
+            String token = authorization.substring(7);
+            String username = "";
+            try {
+                username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
+            } catch (AccessDeniedException e) {
+                log.info("Extract username form token", e.getMessage());
+                ErrorResponse error = ErrorResponse.builder()
+                        .timestamp(LocalDate.now())
+                        .status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                        .message(e.getMessage())
+                        .path(request.getRequestURI())
+                        .build();
 
-                    UserDetails userDetails = userServiceDetail.userDetailsService().loadUserByUsername(username);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
 
-                    if (jwtService.isValid(token, TokenType.ACCESS_TOKEN, userDetails)) {
-                        SecurityContext context = SecurityContextHolder.createEmptyContext();
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        context.setAuthentication(authToken);
-                        SecurityContextHolder.setContext(context);
-
-                    }
-                }
-
-                filterChain.doFilter(request, response); // direct sang api
+                objectMapper.writeValue(response.getOutputStream(), error);
+                return; // ❗ RẤT QUAN TRỌNG
             }
-        } finally {
-            filterChain.doFilter(request, response);
+
+            if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userServiceDetail.userDetailsService().loadUserByUsername(username);
+
+                if (jwtService.isValid(token, TokenType.ACCESS_TOKEN, userDetails)) {
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    context.setAuthentication(authToken);
+                    SecurityContextHolder.setContext(context);
+                }
+            }
         }
+
+        // Chỉ gọi filterChain.doFilter một lần duy nhất ở cuối
+        filterChain.doFilter(request, response);
 
     }
 }
