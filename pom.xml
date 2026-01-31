@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<image.path>nghiatv888</image.path>
 	</properties>
 	<dependencies>
 
@@ -219,7 +220,51 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+<!--			<plugin>-->
+<!--                <groupId>com.google.cloud.tools</groupId>-->
+<!--                <artifactId>jib-maven-plugin</artifactId>-->
+<!--                <version>3.4.3</version>-->
+<!--				<configuration>-->
+<!--					<from>-->
+<!--						<image>eclipse-temurin:17-jre-alpine</image>-->
+<!--					</from>-->
+<!--					<to>-->
+<!--						<image>${image.path}/${project.artifactId}:20263101</image>-->
+<!--						&lt;!&ndash; Setting dockerhub account &ndash;&gt;-->
+<!--						<auth>-->
+<!--							&lt;!&ndash;suppress UnresolvedMavenProperty &ndash;&gt;-->
+<!--&lt;!&ndash;							<username>${env.DOCKER_USERNAME}</username>&ndash;&gt;-->
+<!--							<username>nghiatv888</username>-->
+<!--							&lt;!&ndash;suppress UnresolvedMavenProperty &ndash;&gt;-->
+<!--							<password>${env.DOCKER_PASSWORD}</password>-->
+<!--&lt;!&ndash;							<password>dckr_pat_s37ixPW-sBsB2X45I7RbiT0GhD0</password>&ndash;&gt;-->
+<!--						</auth>-->
+<!--					</to>-->
+<!--					<container>-->
+<!--						<ports>-->
+<!--							<port>8084</port>-->
+<!--						</ports>-->
+<!--						<environment>-->
+<!--							<SPRING_PROFILES_ACTIVE>dev</SPRING_PROFILES_ACTIVE>-->
+<!--						</environment>-->
+<!--					</container>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 		</plugins>
+		<finalName>backend-service</finalName>
 	</build>
 
 </project>

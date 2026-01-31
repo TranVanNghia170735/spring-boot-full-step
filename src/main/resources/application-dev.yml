@@ -5,9 +5,16 @@ spring:
   devtools:
     add-properties: true
   datasource:
-    url: jdbc:postgresql://${DATABASE_URL:localhost:5432/db_full_step}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:admin}
+#    url: jdbc:postgresql://${DATABASE_URL:localhost:5432/db_full_step}
+#    username: ${DATABASE_USERNAME:postgres}
+#    password: ${DATABASE_PASSWORD:admin}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:db_full_step}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:admin}
+#    url: jdbc:postgresql://postgres:5432/db_full_step
+#    username: postgres
+#    password: admin
+
     hikari: # Connection poll
       max-lifetime: 300000      # 5 phút
       idle-timeout: 60000       # 1 phút

@@ -7,6 +7,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
+      POSTGRES_DB: db_full_step
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
@@ -22,14 +23,12 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8084:8084"
     env_file:
       - .env
     environment:
-      DATABASE_HOST: host.docker.internal
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: admin
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8084
       LOGSTASH_HOST: host.docker.internal:5600
     networks:
       - default
@@ -52,8 +51,6 @@ services:
     restart: always
     ports:
       - "5600:5600" # Socket port
-      - "5044:5044"
-    #      - "9600:9600"
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf #File trên MÁY BẠN (host): File bên trong CONTAINER Logstash
     environment:
